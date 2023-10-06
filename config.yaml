@@ -32,6 +32,11 @@ points:
     matrix:
       key.padding: ky
       columns:
+        outer:
+          key:
+            stagger: 0 ky
+            spread: kx
+            column_net: col_outer
         pinky:
           key:
             stagger: 0 ky
@@ -278,6 +283,7 @@ pcbs:
           P18: col_middle
           P19: col_ring
           P20: col_pinky
+          P21: col_outer
       mcu_r:
         what: promicro
         where:
