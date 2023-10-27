@@ -1,19 +1,21 @@
 meta:
   engine: 4.0.4
-  name: samoklava
-  version: 0.3
-  author: soundmonnster
-  url: https://github.com/soundmonster/samoklava
+  name: keydette
+  version: 0.1
+  author: hedefalk
+  url: https://github.com/hedefalk/keydette
 units:
-  kx: cx
-  ky: cy
+  # kx: cx
+  # ky: cy
+  kx: u
+  ky: u
   px: 2
   py: 2
 points:
   key:
     footprints:
-      choc_hotswap:
-        type: choc
+      mx_hotswap:
+        type: mx
         params:
           hotswap: true
           reverse: true
@@ -28,6 +30,8 @@ points:
           to: =row_net
         anchor:
           shift: [0, -5]
+
+        
   zones:
     matrix:
       key.padding: ky
@@ -69,6 +73,8 @@ points:
           row_net: row_home
         top:
           row_net: row_top
+        upper:
+          row_net: row_upper
     thumbfan:
       anchor:
         ref: matrix_inner_bottom
@@ -245,8 +251,8 @@ pcbs:
         outline: pcb
         layer: Edge.Cuts
     footprints:
-      choc_hotswap:
-        what: choc
+      mx_hotswap:
+        what: mx
         where:
           - /matrix_.*/
           - /thumbfan_.*/
@@ -274,6 +280,7 @@ pcbs:
           rotate: 270
         params:
           orientation: up
+          # P8: row_upper # Check this
           P4: row_top
           P5: row_home
           P6: row_bottom
@@ -399,7 +406,7 @@ pcbs:
             - matrix_pinky_bottom
           shift: [0.75 kx, 0]
         params:
-          text: "samoklava v0.3\\nby soundmonster"
+          text: "keydette v0.1\\nby hedefalk"
           justify: left
       info_r:
         what: text
@@ -409,6 +416,6 @@ pcbs:
           shift: [0.75 kx, 0]
         params:
           layer: B.SilkS
-          text: "samoklava v0.3\\nby soundmonster"
+          text: "keydette v0.1\\nby hedefalk"
           justify: right mirror
 

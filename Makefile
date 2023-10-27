@@ -4,7 +4,8 @@
 .DEFAULT: all
 
 container_cmd ?= docker
-container_args ?= --platform=linux/amd64 -w /board -v $(shell pwd):/board --rm
+container_args ?= -w /board -v $(shell pwd):/board --rm
+# container_args ?= --platform=linux/amd64 -w /board -v $(shell pwd):/board --rm
 kikit ?= yaqwsx/kikit:v1.3.0 
 
 setup:
@@ -27,23 +28,23 @@ output/routed_pcbs/%.kicad_pcb: output/routed_pcbs/%.ses output/pcbs/%.kicad_pcb
 	mkdir -p $(shell dirname $@)
 	# file can not be present or the script will refuse to run
 	if [ -f "$@" ] ; then rm $@ ; fi
-	${container_cmd} run ${container_args} soundmonster/kicad-automation-scripts:latest /usr/lib/python2.7/dist-packages/kicad-automation/pcbnew_automation/import_ses.py output/pcbs/$*.kicad_pcb $< --output-file $@
+	${container_cmd} run ${container_args} --platform=linux/amd64 soundmonster/kicad-automation-scripts:latest /usr/lib/python2.7/dist-packages/kicad-automation/pcbnew_automation/import_ses.py output/pcbs/$*.kicad_pcb $< --output-file $@
 
 output/routed_pcbs/%-drc/: output/routed_pcbs/%.kicad_pcb
 	mkdir -p $@
-	${container_cmd} run ${container_args} soundmonster/kicad-automation-scripts:latest /usr/lib/python2.7/dist-packages/kicad-automation/pcbnew_automation/run_drc.py  $< $@
+	${container_cmd} run ${container_args} --platform=linux/amd64 soundmonster/kicad-automation-scripts:latest /usr/lib/python2.7/dist-packages/kicad-automation/pcbnew_automation/run_drc.py  $< $@
 
 output/routed_pcbs/%-front.png: output/routed_pcbs/%.kicad_pcb
 	mkdir -p $(shell dirname $@)
-	${container_cmd} run --entrypoint pcbdraw ${container_args} ${kikit} plot --style oshpark-afterdark.json $< $@
+	${container_cmd} run --entrypoint pcbdraw ${container_args} --platform=linux/amd64 ${kikit} plot --style oshpark-afterdark.json $< $@
 
 output/routed_pcbs/%-back.png: output/routed_pcbs/%.kicad_pcb
 	mkdir -p $(shell dirname $@)
-	${container_cmd} run --entrypoint pcbdraw ${container_args} ${kikit} plot --style oshpark-afterdark.json $< $@
+	${container_cmd} run --entrypoint pcbdraw ${container_args} --platform=linux/amd64 ${kikit} plot --style oshpark-afterdark.json $< $@
 
 output/gerbers/%/gerbers.zip: output/routed_pcbs/%.kicad_pcb
 	mkdir -p $(shell dirname $@)
-	${container_cmd} run ${container_args} ${kikit} fab jlcpcb --no-drc --no-assembly $< $(shell dirname $@)
+	${container_cmd} run ${container_args} --platform=linux/amd64 ${kikit} fab jlcpcb --no-drc --no-assembly $< $(shell dirname $@)
 
 clean:
 	rm -rf output
@@ -55,6 +56,5 @@ all: \
 	output/gerbers/bottom_plate/gerbers.zip \
 	output/gerbers/board/gerbers.zip
 
-#  pcbdraw plot --style oshpark-afterdark.json output/routed_pcbs/board.kicad_pcb output/routed_pcbs/board-front.png
-# pcbdraw plot --style oshpark-afterdark.json output/routed_pcbs/board.kicad_pcb output/routed_pcbs/board-front.png
-# pcbdraw --style builtin:oshpark-afterdark.json output/routed_pcbs/board.kicad_pcb output/routed_pcbs/board-front.png
+# To debug changes in kikit:
+# docker run --entrypoint /bin/bash --platform=linux/amd64 -w /board -v /Users/viktor/dev/hedefalk/samoklava:/board -it --rm yaqwsx/kikit:v1.3.0
