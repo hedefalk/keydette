@@ -4,7 +4,8 @@
 .DEFAULT: all
 
 container_cmd ?= docker
-container_args ?= -w /board -v $(shell pwd):/board --rm
+container_args ?= --platform=linux/amd64 -w /board -v $(shell pwd):/board --rm
+kikit ?= yaqwsx/kikit:v1.3.0 
 
 setup:
 	npm install
@@ -34,15 +35,15 @@ output/routed_pcbs/%-drc/: output/routed_pcbs/%.kicad_pcb
 
 output/routed_pcbs/%-front.png: output/routed_pcbs/%.kicad_pcb
 	mkdir -p $(shell dirname $@)
-	${container_cmd} run ${container_args} yaqwsx/kikit:v0.7 pcbdraw --style builtin:oshpark-afterdark.json $< $@
+	${container_cmd} run --entrypoint pcbdraw ${container_args} ${kikit} plot --style oshpark-afterdark.json $< $@
 
 output/routed_pcbs/%-back.png: output/routed_pcbs/%.kicad_pcb
 	mkdir -p $(shell dirname $@)
-	${container_cmd} run ${container_args} yaqwsx/kikit:v0.7 pcbdraw -b --style builtin:oshpark-afterdark.json $< $@
+	${container_cmd} run --entrypoint pcbdraw ${container_args} ${kikit} plot --style oshpark-afterdark.json $< $@
 
 output/gerbers/%/gerbers.zip: output/routed_pcbs/%.kicad_pcb
 	mkdir -p $(shell dirname $@)
-	${container_cmd} run ${container_args} yaqwsx/kikit:v0.7 kikit fab jlcpcb --no-assembly $< $(shell dirname $@)
+	${container_cmd} run ${container_args} ${kikit} fab jlcpcb --no-drc --no-assembly $< $(shell dirname $@)
 
 clean:
 	rm -rf output
@@ -54,3 +55,6 @@ all: \
 	output/gerbers/bottom_plate/gerbers.zip \
 	output/gerbers/board/gerbers.zip
 
+#  pcbdraw plot --style oshpark-afterdark.json output/routed_pcbs/board.kicad_pcb output/routed_pcbs/board-front.png
+# pcbdraw plot --style oshpark-afterdark.json output/routed_pcbs/board.kicad_pcb output/routed_pcbs/board-front.png
+# pcbdraw --style builtin:oshpark-afterdark.json output/routed_pcbs/board.kicad_pcb output/routed_pcbs/board-front.png
