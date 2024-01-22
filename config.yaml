@@ -280,7 +280,7 @@ pcbs:
           rotate: 270
         params:
           orientation: up
-          # P8: row_upper # Check this
+          P8: row_upper # Check this
           P4: row_top
           P5: row_home
           P6: row_bottom
