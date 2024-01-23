@@ -4,8 +4,8 @@
 .DEFAULT: all
 
 container_cmd ?= docker
-container_args ?= -w /board -v $(shell pwd):/board --rm
-# container_args ?= --platform=linux/amd64 -w /board -v $(shell pwd):/board --rm
+# container_args ?= -w /board -v $(shell pwd):/board --rm
+container_args ?= --platform=linux/amd64 -w /board -v $(shell pwd):/board --rm
 kikit ?= yaqwsx/kikit:v1.3.0 
 
 setup:
